@@ -18,14 +18,14 @@ npar=length(pars);
 new_pars=zeros(1,npar);
 
 % Step through each parameter and update based on cost
-for j=1:npar;
+for j=1:npar
     new_pars(j)=pars(j)+dt*(alpha(j)*w(j))^0.5*cos(w(j)*step*dt+k(j)*cost);
     % Check that upper bounds are satisfied
-    if new_pars(j) > high_lims(j);
+    if new_pars(j) > high_lims(j)
         new_pars(j) = high_lims(j);
     end
     % Check that lower bounds are satisfied
-    if new_pars(j) < low_lims(j);
+    if new_pars(j) < low_lims(j)
         new_pars(j) = low_lims(j);
     end
 end
