@@ -21,7 +21,7 @@ dir_str = fileparts(which('run_LiTrack_GUI.m'));
 addpath('support')
 addpath('ParticleFiles')
 addpath('SaveFiles')
-addpath('WakeFiles')
+addpath('Wakefiles')
 addpath('MatFiles')
 
 LiTrack_GUI('dir',[dir_str filesep 'Wakefiles'],[dir_str filesep 'ParticleFiles'],[dir_str filesep 'SaveFiles'],[dir_str filesep 'support']);	% do not change this line
