@@ -197,7 +197,6 @@ end
 
 % --- Executes on button press in clear.
 function clear_Callback(hObject, eventdata, handles)
-
 clear_beamline( handles)
 set(handles.comment,'String',' ')
 set(handles.savename,'String',' ')
@@ -241,9 +240,11 @@ if run_ok
         cost=res_I+res_E;
         bmatrix=handles.inp_struc.beamline;
         [newTable] = convertUitable(handles);
-        indexOptimize=(find(cell2mat(newTable.Logic)));
+        indexOptimize = find(cell2mat(newTable.Logic));
+        [ix, iy] = find(cell2mat(newTable.Logic)); 
+        iy=iy+1; 
         delta = cell2mat(newTable.Delta(indexOptimize));
-        index_transform = indexOptimize +25;
+        index_transform = indexOptimize + 25;
         pars =bmatrix(index_transform);
         %pars=[bmatrix(6,3) bmatrix(11,3) bmatrix(14,3)];
         
@@ -268,10 +269,11 @@ if run_ok
         
         % Dithering amplitudes
         alpha=10000+zeros(1,np);
+        %alpha = zeros(1,np);
         
         % ES gains
-        k=0.0+zeros(1,np);
-        
+        k=1.0+zeros(1,np);
+        %k = zeros(1,np);
         % Number of steps to run
         ESsteps=str2double(get(handles.iter_textbox, 'String'));
         
@@ -291,11 +293,14 @@ if run_ok
             [new_pars] = ES_Param_Update(ESparams(:,jes),low_lims,high_lims,EScost(jes),w,k,alpha,dt,jes);
             ESparams(:,jes+1) = new_pars;
             
-            handles.inp_struc.beamline(6,3)=new_pars(1);
-            handles.inp_struc.beamline(11,3)=new_pars(2);
-            handles.inp_struc.beamline(14,3)=new_pars(3);
+            
+            sz = length(ix);
+            for ii = 1:sz
+                handles.inp_struc.beamline(ix(ii), iy(ii))  = new_pars(ii);
+            end
+
             ESparamsScaled=ESparams;
-            for j=1:np;
+            for j=1:np
                 ESparamsScaled(j,:)=ESparams(j,:)-mean(ESparams(j,:));
             end
             
@@ -307,6 +312,7 @@ if run_ok
             plot(ESparamsScaled(:,1:jes)')
             subplot(1,2,2)
             plot(EScost(1:jes))
+            [handles.inp_struc.beamline] = LiTrack_check(handles.inp_struc.beamline,ix);
             [handles.bunchDist] = LiTrack(0,0,0,0,0,0,handles.inp_struc,handles.wake_fn, handles);
             guidata(hObject, handles)
             [res_I, res_E] = trex_converter2(handles, 1);
@@ -315,7 +321,7 @@ if run_ok
             
         end
         ESparamsScaled=ESparams;
-        for j=1:np;
+        for j=1:np
             ESparamsScaled(j,:)=ESparams(j,:)-mean(ESparams(j,:));
         end
         
